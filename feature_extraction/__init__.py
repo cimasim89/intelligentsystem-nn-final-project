@@ -1,13 +1,13 @@
 import glob
 import pickle
 from functools import partial
+from pipetools import pipe
 
 import librosa
 import numpy as np
 import soundfile
-from pipetools import pipe
 
-from utils import none_func, print_wrapper
+from utils import none_func, inspect_wrapper
 
 
 def extract_features(mfcc_required, chroma_required, mel_required):
@@ -31,7 +31,7 @@ def extract_features(mfcc_required, chroma_required, mel_required):
 
 
 def extract_feature_from_file(mfcc_required, chroma_required, mel_required):
-    return pipe | print_wrapper(lambda x: print("Parsing {0}".format(x))) | soundfile.SoundFile | extract_features(
+    return pipe | inspect_wrapper(lambda x: print("Parsing {0}".format(x))) | soundfile.SoundFile | extract_features(
         mfcc_required, chroma_required, mel_required)
 
 
@@ -88,3 +88,4 @@ def get_features(mfcc_required, chroma_required, mel_required, storage_name='./f
            | elaborate_features(mfcc_required=mfcc_required, chroma_required=chroma_required, mel_required=mel_required,
                                 storage_name=storage_name, active=active) \
            | load_features(storage_name)
+

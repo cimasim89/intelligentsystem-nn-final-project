@@ -1,7 +1,13 @@
 import click
+from pipetools import pipe
+from functools import partial
 
 import version
+from constants import emotion_labels, observed_emotions
+from dataset import filter_dataset, prepare_dataset
 from feature_extraction import get_features
+from train import train_network
+from utils import get_emotion_code_from_description
 
 
 def parse_action(action):
@@ -21,22 +27,29 @@ def parse_action(action):
 @click.option('--action',
               type=click.Choice(['extract', 'train', 'all'], case_sensitive=False))
 def emotion_classifier(audio_source_path, storage_name, action):
+    get_observed_emotions_codes = get_emotion_code_from_description(emotion_labels)(observed_emotions)
     [extraction_active, train_active] = parse_action(action)
+
     print("Starting...")
     print("Feature extraction: {0}".format(extraction_active))
     print("Network train: {0}".format(train_active))
 
-    print(list(get_features(
-        mfcc_required=True,
-        chroma_required=True,
-        mel_required=True,
-        storage_name=storage_name,
-        active=extraction_active)(
-        audio_source_path)))
-    # 3 - TODO divide feature dataset
+    execute = (pipe
+               | get_features(
+                mfcc_required=True,
+                chroma_required=True,
+                mel_required=True,
+                storage_name=storage_name,
+                active=extraction_active)
+               | partial(filter, filter_dataset(get_observed_emotions_codes))
+               | list
+               | train_network)
+
+    execute(audio_source_path)
     # 4 - TODO define NN
     # 5 - TODO train
     # 6 - TODO test
+    # 7 - TODO show results
 
 
 if __name__ == '__main__':
