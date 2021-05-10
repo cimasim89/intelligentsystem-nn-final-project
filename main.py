@@ -43,13 +43,9 @@ def emotion_classifier(audio_source_path, storage_name, action):
                 active=extraction_active)
                | partial(filter, filter_dataset(get_observed_emotions_codes))
                | list
-               | train_network)
+               | train_network())
 
     execute(audio_source_path)
-    # 4 - TODO define NN
-    # 5 - TODO train
-    # 6 - TODO test
-    # 7 - TODO show results
 
 
 if __name__ == '__main__':
