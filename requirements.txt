@@ -2,5 +2,5 @@ click==7.1.2
 pipetools==0.3.6
 librosa==0.8.0
 soundfile==0.10.3.post1
-numpy==1.20.3
+numpy==1.21.5
 scikit-learn==0.24.2
